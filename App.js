@@ -1,5 +1,6 @@
 import * as React from "react";
 import { View, Text, Button, Image, StyleSheet, logoSize } from "react-native";
+
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Login } from "./src/screens/login";
@@ -10,6 +11,7 @@ function HomeScreen({ navigation }) {
   const go = () => {
     navigation.navigate("Login");
   };
+
   return (
     <View>
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>

@@ -1,13 +1,16 @@
 import * as React from "react";
 import { useRef, useState, useEffect } from "react";
+import { Camera, CameraType } from "expo-camera";
+import * as ImagePicker from "expo-image-picker";
+import { Video } from "expo-av";
 import {
   View,
-  Button,
   StyleSheet,
   TouchableOpacity,
   Text,
   TextInput,
   ScrollView,
+  Button,
 } from "react-native";
 
 function Login({ navigation }) {
@@ -25,6 +28,31 @@ function Login({ navigation }) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  // const [type, setType] = useState(CameraType.back);
+  // const [permission, requestPermission] = Camera.useCameraPermissions();
+
+  // requestPermission();
+  const [imageUri, setImageUri] = useState();
+  const [videoUri, setVideoUri] = useState();
+  const openGallery = () => {
+    ImagePicker.getMediaLibraryPermissionsAsync().then((response) => {
+      console.log("permission granted");
+    });
+
+    ImagePicker.launchImageLibraryAsync({
+      quality: 0.5,
+      mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+    })
+      .then((response) => {
+        if (response.uri !== undefined) {
+          setVideoUri(response.uri);
+        }
+      })
+      .catch((error) => {
+        alert(error.message);
+      });
+  };
+
   function handleSubmit() {
     const data = {
       name: nameRef.current.value,
@@ -41,13 +69,13 @@ function Login({ navigation }) {
     console.log("Data:", data);
     navigation.navigate("Signup", { data });
   }
+
   useEffect(() => {
     checkValidForm();
   }, [name, age, city, country, password, confirmPassword]);
 
   const checkValidForm = () => {
     if (name === "") {
-      alert("Name enter");
       setIsValid(false);
       return;
     }
@@ -77,6 +105,11 @@ function Login({ navigation }) {
     }
     setIsValid(true);
   };
+  function toggleCameraType() {
+    setType((current) =>
+      current === CameraType.back ? CameraType.front : CameraType.back
+    );
+  }
 
   return (
     <ScrollView>
@@ -127,12 +160,22 @@ function Login({ navigation }) {
             onChangeText={setConfirmPassword}
           />
         </View>
+        {videoUri !== undefined ? (
+          <Video
+            style={{ width: 300, height: 300 }}
+            source={{ uri: videoUri }}
+            useNativeControls={true}
+          />
+        ) : (
+          <View />
+        )}
         <View style={styles.bb}>
           <TouchableOpacity onPress={handleSubmit} disabled={isValid === false}>
             <Text style={styles.submit}>Submit</Text>
           </TouchableOpacity>
         </View>
       </View>
+      <Button title={"Open Gallery"} onPress={openGallery} />
     </ScrollView>
   );
 }
@@ -176,5 +219,20 @@ const styles = StyleSheet.create({
     flex: 0.2,
 
     alignItems: "center",
+  },
+  camera: {
+    widt: 200,
+    height: 400,
+  },
+  tex: {
+    justifyContent: "center",
+    alignContent: "center",
+    fontSize: 30,
+    textAlign: "center",
+    color: "green",
+  },
+  video: {
+    width: 400,
+    height: 400,
   },
 });
