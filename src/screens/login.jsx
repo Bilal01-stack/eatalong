@@ -2,6 +2,8 @@ import * as React from "react";
 import { useRef, useState, useEffect } from "react";
 import { Camera, CameraType } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
+import { auth } from "../services/firebaseConfig";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { Video } from "expo-av";
 import {
   View,
@@ -14,15 +16,15 @@ import {
 } from "react-native";
 
 function Login({ navigation }) {
-  const nameRef = useRef();
-  const ageRef = useRef();
-  const cityRef = useRef();
-  const countryRef = useRef();
-  const passwordRef = useRef();
+  // const nameRef = useRef();
+  // const emailRef = useRef();
+  // const cityRef = useRef();
+  // const countryRef = useRef();
+  // const passwordRef = useRef();
 
   const [isValid, setIsValid] = useState(false);
   const [name, setName] = useState("");
-  const [age, setAge] = useState("");
+  const [email, setEmail] = useState("");
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("");
   const [password, setPassword] = useState("");
@@ -53,33 +55,26 @@ function Login({ navigation }) {
       });
   };
 
-  function handleSubmit() {
-    const data = {
-      name: nameRef.current.value,
-      age: ageRef.current.value,
-      city: cityRef.current.value,
-      country: countryRef.current.value,
-      password: passwordRef.current.value,
-    };
-    console.log("Name:", nameRef.current.value);
-    console.log("Age:", ageRef.current.value);
-    console.log("City:", cityRef.current.value);
-    console.log("Country:", countryRef.current.value);
-    console.log("Password:", passwordRef.current.value);
-    console.log("Data:", data);
-    navigation.navigate("Signup", { data });
-  }
+  const handleSubmit = () => {
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((response) => {
+        alert("All Good");
+      })
+      .catch((error) => {
+        alert(error.message);
+      });
+  };
 
   useEffect(() => {
     checkValidForm();
-  }, [name, age, city, country, password, confirmPassword]);
+  }, [name, email, city, country, password, confirmPassword]);
 
   const checkValidForm = () => {
     if (name === "") {
       setIsValid(false);
       return;
     }
-    if (age === "") {
+    if (email === "") {
       setIsValid(false);
       return;
     }
@@ -119,28 +114,28 @@ function Login({ navigation }) {
           <TextInput
             style={styles.field}
             placeholder="Enter Your Name"
-            ref={nameRef}
+            // ref={nameRef}
             onChangeText={setName}
           />
-          <Text style={styles.text}>Enter Your Age</Text>
+          <Text style={styles.text}>Enter Your Email</Text>
           <TextInput
             style={styles.field}
-            placeholder="Enter Your Age"
-            ref={ageRef}
-            onChangeText={setAge}
+            placeholder="Enter Your email"
+            //ref={ageRef}
+            onChangeText={setEmail}
           />
           <Text style={styles.text}>Enter Your City Name</Text>
           <TextInput
             style={styles.field}
             placeholder="Enter Your City Name"
-            ref={cityRef}
+            // ref={cityRef}
             onChangeText={setCity}
           />
           <Text style={styles.text}>Enter Your Country Name</Text>
           <TextInput
             style={styles.field}
             placeholder="Enter Your Country Name"
-            ref={countryRef}
+            // ref={countryRef}
             onChangeText={setCountry}
           />
           <Text style={styles.text}>Enter Your Password</Text>
@@ -148,7 +143,7 @@ function Login({ navigation }) {
             style={styles.field}
             placeholder="Enter Your Password"
             secureTextEntry={true}
-            ref={passwordRef}
+            // ref={passwordRef}
             onChangeText={setPassword}
           />
           <Text style={styles.text}>Confirm Password</Text>
@@ -156,7 +151,7 @@ function Login({ navigation }) {
             style={styles.field}
             placeholder="Confirm Password"
             secureTextEntry={true}
-            ref={passwordRef}
+            // ref={passwordRef}
             onChangeText={setConfirmPassword}
           />
         </View>
